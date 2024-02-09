@@ -1,17 +1,34 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Form from './form'
+import Edit_list from './edit_list'
 
 function App() {
 
   const [todos, setTodos] = useState([])
+  const [isShown, setIsShown] = useState(false);
+
+  useEffect(() => {
+    const array = JSON.parse(localStorage.getItem("todo"))
+    if (array) {
+      setTodos(array)
+    }
+  }, [])
+  
 
   const putTodo = (value) => {
     if (value) {
-      setTodos([...todos, {id: Date.now(), text: value, done: false}])
+      setTodos([...todos, {text: value, done: false}])
     } else {
       alert("Введите текст")
     }
+
+    localStorage.setItem('todo', JSON.stringify([...todos, { text: value, done: false, edit: false}]))
+  }
+
+  const setTodo = () => {
+    const array = localStorage.getItem("todo")
+    setTodos(array)
   }
 
   const toggleTodo = (id) => {
@@ -27,7 +44,17 @@ function App() {
 
   const removeTodo = (id) => {
     setTodos(todos.filter(todo => todo.id !== id))
+
   }
+
+
+  const handleClick = event => {
+    // 👇️ toggle shown state
+    setIsShown(current => !current);
+
+    // 👇️ or simply set it to true
+    // setIsShown(true);
+  };
 
   return (
     <>
@@ -42,13 +69,10 @@ function App() {
           {
             todos.map(todo => {
               return (
-                <li >
-                  <a className={todo.done ? "todo done" : "todo"} key={todos.id}>{todo.text}</a>
-                  <button className='complete'  id='complete_task' onClick={() => toggleTodo(todo.id)}>done</button>
-                  <button className='delete'  id='delete_task' onClick={e => {
-                    e.stopPropagation();
-                    removeTodo(todo.id);
-                  }}>delete</button>
+                <li key={index}>
+                  <input className={"task " + (e.complite ? "line" : "text")} value={e.task} onChange={(a) => updateList(index, a.target.value)} />
+                  <button className={todo.done ? "task_done" : "task_udone"}  id='complete_task' onClick={() => done(index)}>{todo.done ? "undone" : "done"}</button>
+                  <button className='delete'  id='delete_task' onClick={() => deleteTask(index)}>delete</button>
                 </li>
               )
             })
