@@ -67,7 +67,7 @@ function App() {
         <h1 className="title">My tasks</h1>
         <ul className="todos">
           {
-            todos.map(todo => {
+            todos.map(e, index => {
               return (
                 <li key={index}>
                   <input className={"task " + (e.complite ? "line" : "text")} value={e.task} onChange={(a) => updateList(index, a.target.value)} />
